@@ -16,7 +16,7 @@ Si el repositorio es público, el código y el logotipo incluidos en él serán 
 
 ## Publicación en GitHub Pages
 
-1. Crea un repositorio público llamado `generador-pra-seneca`.
-2. Sube `index.html`, `README.md`, `.gitignore` y `Logo_Comares_Color_Horizontal (1).png` a la rama `main`.
+1. El repositorio público utilizado para esta aplicación es `rcabreratic-comares/PRA`.
+2. Sube `index.html`, `README.md`, `.gitignore`, `Logo_Comares_Color_Horizontal (1).png` y `nombreserendipia.jpg` a la rama `main`.
 3. En **Settings → Pages**, selecciona **Deploy from a branch**, la rama `main` y la carpeta `/ (root)`.
-4. Cuando finalice el despliegue, abre la URL que indique GitHub. Normalmente será `https://<usuario>.github.io/generador-pra-seneca/`.
+4. Cuando finalice el despliegue, abre `https://rcabreratic-comares.github.io/PRA/`.
