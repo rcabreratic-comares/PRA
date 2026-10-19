@@ -14,6 +14,8 @@ Los datos escritos en el formulario se procesan en el navegador. No se envían a
 
 Si el repositorio es público, el código y el logotipo incluidos en él serán visibles públicamente. La página publicada mediante GitHub Pages también será accesible públicamente; no introduzcas información real del alumnado en enlaces, archivos o capturas compartidos.
 
+El pie de página incluye un enlace de contacto a Twitter: [@rcabreratic](https://twitter.com/rcabreratic).
+
 ## Publicación en GitHub Pages
 
 1. El repositorio público utilizado para esta aplicación es `rcabreratic-comares/PRA`.
