@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Programa de refuerzo de aprendizajes (PRA)</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <header>
+    <h1>Programa de refuerzo de aprendizajes (PRA)</h1>
+    <p id="status" class="status"></p>
+  </header>
+
+  <section>
+    <h2>Tipologías</h2>
+    <div id="typologies" class="chips"></div>
+  </section>
+
+  <section class="row">
+    <label><input type="checkbox" id="append"> Añadir al texto existente</label>
+    <button id="fillAll" class="primary">Rellenar todos los apartados</button>
+    <button id="reset" class="ghost">Limpiar selección</button>
+    <div class="io">
+      <button id="export">Exportar mis medidas</button>
+      <button id="import">Importar medidas</button>
+      <input type="file" id="importFile" accept="application/json,.json" hidden>
+    </div>
+  </section>
+
+  <div id="sections"></div>
+
+  <div id="thanks" class="thanks" hidden>
+    <p>¡Listo! Si te gustó, puedes invitarme a un café.</p>
+    <a class="coffee" href="https://ko-fi.com/rcabreratic" target="_blank" rel="noopener noreferrer">☕ Invítame a un café</a>
+    <button id="thanksClose" class="ghost">Ahora no</button>
+  </div>
+
+  <script src="data.js"></script>
+  <footer class="foot">
+    <a class="coffee" href="https://ko-fi.com/rcabreratic" target="_blank" rel="noopener noreferrer">☕ Si te gustó, puedes invitarme a un café</a>
+  </footer>
+  <script src="panel.js"></script>
+</body>
+</html>

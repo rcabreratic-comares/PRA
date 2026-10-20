@@ -19,6 +19,6 @@ El pie de página incluye un enlace de contacto a Twitter: [@rcabreratic](https:
 ## Publicación en GitHub Pages
 
 1. El repositorio público utilizado para esta aplicación es `rcabreratic-comares/PRA`.
-2. Sube `index.html`, `README.md`, `.gitignore`, `Logo_Comares_Color_Horizontal (1).png` y `nombreserendipia.jpg` a la rama `main`.
+2. Sube `index.html`, `README.md`, `.gitignore`, `Logo_Comares_Color_Horizontal (1).png` y `nombreserendipia.jpg` y la carpeta `extension/` (necesita `extension/data.js`) a la rama `main`.
 3. En **Settings → Pages**, selecciona **Deploy from a branch**, la rama `main` y la carpeta `/ (root)`.
 4. Cuando finalice el despliegue, abre `https://rcabreratic-comares.github.io/PRA/`.
