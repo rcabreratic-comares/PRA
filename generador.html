@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#861d2d">
+    <meta name="description" content="Prepara un informe imprimible de medidas para los Programas de Refuerzo de los Aprendizajes.">
+    <title>Generador de informes PRA · IES Marqués de Comares</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        emerald: {
+                            50: '#fbf1f2',
+                            100: '#f4dfe2',
+                            500: '#b63c50',
+                            600: '#a12a3d',
+                            700: '#901f32',
+                            800: '#861d2d',
+                            900: '#671524',
+                        },
+                        brand: {
+                            50: '#fbf7f1',
+                            100: '#f1e6d4',
+                            500: '#a47b4b',
+                            600: '#89633a',
+                            700: '#76512f',
+                            800: '#634328',
+                            900: '#503722',
+                        },
+                        seneca: {
+                            50: '#fbf1f2',
+                            100: '#f4dfe2',
+                            600: '#a12a3d',
+                            700: '#901f32',
+                            800: '#861d2d',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: #fff !important; }
+            main { max-width: none !important; padding: 0 !important; }
+            #outputPreview { max-height: none !important; overflow: visible !important; }
+            .print-container { width: 100% !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; }
+            #outputPreview { padding: 0 !important; font-size: 10pt !important; }
+            #outputPreview .print-header { margin-bottom: 1.25rem !important; padding: 1rem !important; border: 1px solid #cbd5e1 !important; border-top: 5px solid #861d2d !important; border-radius: 8px !important; }
+            #outputPreview .print-header-logo { max-width: 190px !important; max-height: 72px !important; }
+            #outputPreview .print-section { break-inside: avoid; page-break-inside: avoid; padding-bottom: .7rem !important; }
+            #outputPreview .print-section h4 { color: #861d2d !important; font-size: 10pt !important; }
+            #outputPreview .print-section-content { font-size: 9pt !important; line-height: 1.5 !important; }
+            @page { size: A4; margin: 16mm; }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Header principal -->
+    <header class="bg-white text-slate-800 shadow-sm border-b border-slate-200 sticky top-0 z-30 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex max-w-full flex-wrap items-center gap-x-4 gap-y-2">
+                <img src="./Logo_Comares_Color_Horizontal%20(1).png" alt="IES Marqués de Comares" class="h-8 sm:h-12 w-auto max-w-[35vw] object-contain">
+                <div class="hidden sm:block h-10 w-px bg-slate-200"></div>
+                <div>
+                    <h1 class="text-base sm:text-lg font-bold tracking-tight leading-tight text-slate-800">Programas de Refuerzo</h1>
+                    <p class="text-xs text-slate-500">Generador de medidas para Séneca</p>
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap items-center justify-end gap-2 text-xs sm:text-sm">
+                <button type="button" onclick="resetAll()" class="whitespace-nowrap px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md font-medium transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-rotate-left text-xs"></i> Reiniciar
+                </button>
+                <button type="button" onclick="saveDraft()" class="whitespace-nowrap px-3 py-1.5 bg-seneca-800 hover:bg-seneca-700 text-white rounded-md font-medium transition flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-floppy-disk text-xs"></i> Guardar Borrador
+                </button>
+                <button type="button" onclick="loadDraft()" class="whitespace-nowrap px-3 py-1.5 border border-seneca-800 text-seneca-800 hover:bg-seneca-50 rounded-md font-medium transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-folder-open text-xs"></i> Cargar Borrador
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Modal Toast para avisos -->
+    <div id="toast" role="status" aria-live="polite" class="fixed bottom-5 right-5 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl z-50 transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3 border border-slate-700">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+        <span id="toast-message" class="text-sm font-medium">Acción realizada con éxito</span>
+    </div>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+
+        <aside class="bg-emerald-50 border-2 border-emerald-300 rounded-xl px-4 py-4 mb-6 text-sm sm:text-base text-emerald-950 flex items-start gap-3 no-print" aria-label="Aviso de privacidad">
+            <i class="fa-solid fa-shield-halved text-emerald-700 text-2xl mt-0.5" aria-hidden="true"></i>
+            <div class="space-y-1">
+                <p class="font-bold text-base sm:text-lg">No necesitas escribir nombres de alumnado.</p>
+                <p>Esta aplicación y la extensión de Chrome <strong>no envían datos del alumnado a ningún servidor</strong>. Todo se procesa en tu navegador. Puedes dejar las iniciales vacías. Si pulsas «Guardar borrador», los campos que rellenes se guardan únicamente en el almacenamiento local de este dispositivo.</p>
+                <p><a href="./privacidad.html" class="font-semibold underline hover:text-emerald-700">Leer la política de privacidad completa</a></p>
+            </div>
+        </aside>
+        
+        <!-- Datos del Alumno y Asignatura -->
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-5 mb-6 no-print">
+            <h2 class="text-sm font-bold text-slate-600 uppercase tracking-wider mb-3 flex items-center gap-2">
+                <i class="fa-solid fa-id-card text-emerald-600"></i> Datos del Alumno y Materia
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                <div>
+                    <label for="studentName" class="block text-xs font-semibold text-slate-500 mb-1">Iniciales del alumno/a</label>
+                    <input type="text" id="studentName" placeholder="Ej: J.M.G. (Opcional)" oninput="updateOutput()"
+                           class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition">
+                </div>
+                <div>
+                    <label for="subjectName" class="block text-xs font-semibold text-slate-500 mb-1">Materia / Asignatura</label>
+                    <input type="text" id="subjectName" placeholder="Ej: Matemáticas / Lengua" oninput="updateOutput()"
+                           class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition">
+                </div>
+                <div>
+                    <label for="courseName" class="block text-xs font-semibold text-slate-500 mb-1">Curso</label>
+                    <input type="text" id="courseName" placeholder="Ej: 2.º ESO" oninput="updateOutput()"
+                           class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition">
+                </div>
+                <div>
+                    <label for="groupName" class="block text-xs font-semibold text-slate-500 mb-1">Grupo</label>
+                    <input type="text" id="groupName" placeholder="Ej: B" oninput="updateOutput()"
+                           class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition">
+                </div>
+                <div>
+                    <label for="teacherName" class="block text-xs font-semibold text-slate-500 mb-1">Profesor/a</label>
+                    <input type="text" id="teacherName" placeholder="Ej: D. Antonio Pérez" oninput="updateOutput()"
+                           class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition">
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-5 mb-6 no-print">
+            <h2 class="text-sm font-bold text-slate-600 uppercase tracking-wider mb-3 flex items-center gap-2">
+                <i class="fa-solid fa-school text-emerald-600"></i> Personaliza la cabecera del centro
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start text-sm">
+                <div>
+                    <label for="schoolName" class="block text-xs font-semibold text-slate-500 mb-1">Nombre del centro educativo</label>
+                    <input type="text" id="schoolName" placeholder="Ej: IES Marqués de Comares" oninput="updateOutput()"
+                           class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition">
+                    <p class="mt-1 text-xs text-slate-500">Este nombre aparecerá en la cabecera imprimible. Cada centro puede personalizarlo.</p>
+                </div>
+                <div>
+                    <label for="schoolLogo" class="block text-xs font-semibold text-slate-500 mb-1">Logotipo del centro (opcional)</label>
+                    <input type="file" id="schoolLogo" accept="image/png,image/jpeg,image/webp"
+                           class="block w-full text-xs text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:font-medium file:text-slate-700 hover:file:bg-slate-200">
+                    <div class="mt-2 flex items-center gap-3">
+                        <img id="schoolLogoPreview" alt="Vista previa del logotipo del centro" class="hidden max-h-12 max-w-48 object-contain">
+                        <button type="button" id="removeSchoolLogo" class="hidden text-xs text-red-700 underline">Quitar logotipo</button>
+                        <span id="schoolLogoHint" class="text-xs text-slate-500">Comares usa su logotipo oficial por defecto.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Selección de Tipologías del Alumnado -->
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-5 mb-6 no-print">
+            <div class="flex flex-wrap justify-between items-center mb-3 gap-2">
+                <div>
+                    <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-emerald-600"></i> Selecciona la Tipología o Necesidades del Alumno/a
+                    </h2>
+                    <p class="text-xs text-slate-500">Puedes marcar varias opciones si el alumno presenta dificultades asociadas o múltiples características.</p>
+                </div>
+                <button onclick="clearTypologies()" class="text-xs text-slate-500 hover:text-red-600 font-medium underline">
+                    Desmarcar todas
+                </button>
+            </div>
+
+            <!-- Chips de selección de tipologías -->
+            <div id="typologyContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 text-xs">
+                <!-- Se rellena dinámicamente con JS -->
+            </div>
+            <label class="mt-4 flex items-start gap-2 text-xs text-slate-700">
+                <input type="checkbox" id="groupByTypology" checked class="mt-0.5 rounded text-emerald-600 focus:ring-emerald-500">
+                <span><strong>Clasificar medidas por tipología.</strong> Añade una línea inicial con las tipologías y agrupa debajo las medidas correspondientes. Si desmarcas la opción, se mantiene la línea inicial y las medidas se copian sin agrupar.</span>
+            </label>
+        </section>
+
+        <!-- Dynamic Content Layout: Left measures selector, Right live preview -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+            <!-- Columna Izquierda: Selección de propuestas para los 5 apartados -->
+            <div class="lg:col-span-7 space-y-4 no-print">
+                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex justify-between items-center text-xs text-emerald-900">
+                    <span class="font-semibold"><i class="fa-solid fa-lightbulb text-emerald-600 mr-1.5"></i> Marca o desmarca las medidas recomendadas abajo o añade tus propias frases.</span>
+                    <button onclick="selectAllVisible()" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-medium transition">
+                        Seleccionar Recomendadas
+                    </button>
+                </div>
+
+                <!-- Los 5 Apartados Accordion / Cards -->
+                <div id="sectionsContainer" class="space-y-4">
+                    <!-- Se renderizan por JavaScript -->
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Vista previa para Séneca y Exportación -->
+            <div class="lg:col-span-5 lg:sticky lg:top-20 space-y-4">
+                
+                <div class="print-container bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
+                    <div class="p-3 bg-slate-50 border-b border-slate-200 flex flex-wrap gap-2 text-xs no-print">
+                        <button onclick="copyAllText()" class="flex-1 min-w-[120px] bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-3 rounded-lg shadow-sm transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-copy"></i> Copiar Todo
+                        </button>
+                        <button onclick="printDocument()" class="bg-slate-700 hover:bg-slate-800 text-white font-medium py-2 px-3 rounded-lg shadow-sm transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-print"></i> Imprimir / PDF
+                        </button>
+                        <button onclick="downloadTextFile()" class="bg-seneca-700 hover:bg-seneca-800 text-white font-medium py-2 px-3 rounded-lg shadow-sm transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-download"></i> Guardar .txt
+                        </button>
+                    </div>
+
+                    <!-- Vista Previa Imprimible y Copiable -->
+                    <div id="outputPreview" class="p-4 bg-white font-sans text-xs text-slate-800 leading-relaxed max-h-[70vh] overflow-y-auto custom-scrollbar space-y-4">
+                        <!-- Generado dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Ayuda rápida / Séneca Tips -->
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-900 space-y-1.5 no-print">
+                    <h4 class="font-bold flex items-center gap-1.5 text-amber-800">
+                        <i class="fa-solid fa-circle-info"></i> ¿Cómo usarlo en Séneca?
+                    </h4>
+                    <p>1. Puedes hacer clic en <strong>"Copiar apartado"</strong> en cada uno de los 5 bloques para pegar directamente en la casilla correspondiente de Séneca.</p>
+                    <p>2. O pulsa <strong>"Copiar Todo"</strong> para tener el documento consolidado en tu portapapeles o descargarlo en un archivo.</p>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal para Añadir Medida Personalizada -->
+    <div id="customItemModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-5 space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 id="modalTitle" class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-plus-circle text-emerald-600"></i> Añadir propuesta personalizada
+                </h3>
+                <button onclick="closeCustomModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div id="customSectionField">
+                <label class="block text-xs font-medium text-slate-600 mb-1">Apartado de Séneca:</label>
+                <select id="modalSectionSelect" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs bg-white">
+                    <!-- Rellenado por JS -->
+                </select>
+            </div>
+            <div id="customTextField">
+                <label class="block text-xs font-medium text-slate-600 mb-1">Descripción de la medida / propuesta:</label>
+                <textarea id="modalItemText" rows="3" placeholder="Escribe aquí la medida específica..."
+                          class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-emerald-500 outline-none"></textarea>
+            </div>
+            <div class="space-y-2">
+                <div>
+                    <p class="text-xs font-medium text-slate-600">¿En qué tipologías se incluye?</p>
+                    <p class="text-[11px] text-slate-500">Si no marcas ninguna, aparecerá en «Otras medidas».</p>
+                </div>
+                <div id="customTypologyOptions" class="max-h-52 overflow-y-auto space-y-3 rounded-lg border border-slate-200 p-3"></div>
+            </div>
+            <div class="flex justify-end gap-2 text-xs">
+                <button onclick="closeCustomModal()" class="px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg font-medium">Cancelar</button>
+                <button id="modalSaveButton" onclick="saveCustomItem()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium shadow-sm">Añadir Medida</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-auto border-t border-slate-200 bg-white px-4 py-6 no-print">
+        <div class="mx-auto flex max-w-7xl flex-col items-center gap-3">
+            <img src="./nombreserendipia.jpg" alt="Serendiphia.es" class="h-12 sm:h-14 w-auto max-w-[90vw] object-contain">
+            <a href="./index.html" class="text-xs font-semibold text-slate-600 underline hover:text-slate-900">← Volver a las opciones del PRA</a>
+            <a href="https://twitter.com/rcabreratic" target="_blank" rel="noopener noreferrer"
+               aria-label="Contactar con @rcabreratic en Twitter"
+               class="inline-flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-sky-300 hover:bg-sky-50 hover:text-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2">
+                <i class="fa-brands fa-twitter text-sky-600" aria-hidden="true"></i>
+                <span>@rcabreratic</span>
+            </a>
+            <a href="https://ko-fi.com/rcabreratic" target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
+                <i class="fa-solid fa-mug-hot text-amber-600" aria-hidden="true"></i>
+                <span>Invítame a un café</span>
+            </a>
+            <a href="./privacidad.html" class="text-xs text-slate-500 underline hover:text-slate-700">Política de privacidad</a>
+        </div>
+    </footer>
+
+    <script src="data.js"></script>
+    <script>
+        /* Las tipologías y medidas están en data.js */
+        
+
+        // Estado de la aplicación
+        let state = {
+            selectedTypologies: [],
+            selectedMeasures: {}, // { sectionId: [array de textos elegidos] }
+            customMeasures: {},   // { sectionId: [array de medidas custom] }
+            customTypologies: {}, // { "sectionId|texto": [ids de tipologías] }
+            groupByTypology: true,
+            center: {
+                name: "IES Marqués de Comares",
+                logo: ""
+            },
+            student: {
+                name: "",
+                subject: "",
+                course: "",
+                group: "",
+                teacher: ""
+            }
+        };
+
+        const DEFAULT_CENTER_NAME = "IES Marqués de Comares";
+        const DEFAULT_CENTER_LOGO = "./Logo_Comares_Color_Horizontal%20(1).png";
+        const MAX_LOGO_SIZE = 1024 * 1024;
+
+        // Inicialización al cargar la página
+        window.addEventListener('DOMContentLoaded', () => {
+            initTypologyChips();
+            initSelectionsState();
+            renderSections();
+            document.getElementById('schoolName').value = state.center.name;
+            document.getElementById('groupByTypology').checked = state.groupByTypology;
+            document.getElementById('schoolLogo').addEventListener('change', handleSchoolLogoChange);
+            document.getElementById('removeSchoolLogo').addEventListener('click', removeSchoolLogo);
+            updateOutput();
+
+            document.getElementById('groupByTypology').addEventListener('change', event => {
+                state.groupByTypology = event.target.checked;
+                updateOutput();
+            });
+
+            document.getElementById('sectionsContainer').addEventListener('change', event => {
+                const input = event.target;
+                if (!(input instanceof HTMLInputElement) || input.dataset.measureText === undefined) {
+                    return;
+                }
+                toggleMeasure(Number(input.dataset.sectionId), input.dataset.measureText);
+            });
+        });
+
+        function initSelectionsState() {
+            SENECA_SECTIONS.forEach(sec => {
+                state.selectedMeasures[sec.id] = [];
+                state.customMeasures[sec.id] = [];
+            });
+            // Seleccionar por defecto medidas generales
+            autoSelectRecommended();
+        }
+
+        function updateSchoolLogoPreview() {
+            const preview = document.getElementById('schoolLogoPreview');
+            const removeButton = document.getElementById('removeSchoolLogo');
+            const hint = document.getElementById('schoolLogoHint');
+            const src = getCenterLogoSrc();
+            preview.src = src;
+            preview.classList.toggle('hidden', !src);
+            removeButton.classList.toggle('hidden', !state.center.logo);
+            hint.textContent = state.center.logo
+                ? 'Se usará este logotipo en el documento.'
+                : state.center.name.trim() === DEFAULT_CENTER_NAME
+                    ? 'Se usará el logotipo del IES Marqués de Comares.'
+                    : 'Puedes añadir el logotipo de tu centro.';
+        }
+
+        function handleSchoolLogoChange(event) {
+            const file = event.target.files[0];
+            event.target.value = '';
+            if (!file) return;
+            if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+                showToast('El logotipo debe ser PNG, JPG o WebP.', 'fa-triangle-exclamation', 'text-amber-400');
+                return;
+            }
+            if (file.size > MAX_LOGO_SIZE) {
+                showToast('El logotipo no puede superar 1 MB.', 'fa-triangle-exclamation', 'text-amber-400');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = () => {
+                if (typeof reader.result !== 'string') {
+                    showToast('No se pudo leer el archivo del logotipo.', 'fa-triangle-exclamation', 'text-amber-400');
+                    return;
+                }
+                state.center.logo = reader.result;
+                updateSchoolLogoPreview();
+                updateOutput();
+            };
+            reader.onerror = () => showToast('No se pudo leer el archivo del logotipo.', 'fa-triangle-exclamation', 'text-amber-400');
+            reader.readAsDataURL(file);
+        }
+
+        function removeSchoolLogo() {
+            state.center.logo = '';
+            updateSchoolLogoPreview();
+            updateOutput();
+        }
+
+        function initTypologyChips() {
+            const container = document.getElementById('typologyContainer');
+            container.innerHTML = TYPOLOGIES.map(t => {
+                const isSelected = state.selectedTypologies.includes(t.id);
+                return `
+                    <button onclick="toggleTypology('${t.id}')" 
+                            id="chip-${t.id}"
+                            class="p-2.5 rounded-lg border text-left transition flex items-center gap-2 select-none ${
+                                isSelected 
+                                ? 'bg-emerald-600 border-emerald-600 text-white shadow-sm' 
+                                : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                            }">
+                        <i class="fa-solid ${t.icon} text-sm ${isSelected ? 'text-white' : 'text-slate-500'}"></i>
+                        <span class="font-medium text-xs leading-tight">${t.label}</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function toggleTypology(typologyId) {
+            const index = state.selectedTypologies.indexOf(typologyId);
+            if (index > -1) {
+                state.selectedTypologies.splice(index, 1);
+            } else {
+                state.selectedTypologies.push(typologyId);
+            }
+            initTypologyChips();
+            autoSelectRecommended();
+            renderSections();
+            updateOutput();
+        }
+
+        function clearTypologies() {
+            state.selectedTypologies = [];
+            initTypologyChips();
+            autoSelectRecommended();
+            renderSections();
+            updateOutput();
+        }
+
+        // Selecciona automáticamente medidas sugeridas según las tipologías marcadas
+        function autoSelectRecommended() {
+            SENECA_SECTIONS.forEach(sec => {
+                const relevantDb = MEASURES_DATABASE.filter(m => 
+                    m.sectionId === sec.id && state.selectedTypologies.includes(m.typology)
+                );
+                const newSelected = relevantDb.map(m => m.text);
+                const custom = (state.customMeasures[sec.id] || []).filter(text => {
+                    const typologies = state.customTypologies[customTypologyKey(sec.id, text)] || [];
+                    return !typologies.length || typologies.some(id => state.selectedTypologies.includes(id));
+                });
+                state.selectedMeasures[sec.id] = [...new Set([...newSelected, ...custom])];
+            });
+        }
+
+        function selectAllVisible() {
+            autoSelectRecommended();
+            renderSections();
+            updateOutput();
+            showToast("Medidas recomendadas seleccionadas");
+        }
+
+        function renderSections() {
+            const container = document.getElementById('sectionsContainer');
+            
+            container.innerHTML = SENECA_SECTIONS.map(sec => {
+                // Filtrar medidas aplicables a las tipologías seleccionadas
+                const availableDb = MEASURES_DATABASE.filter(m => 
+                    m.sectionId === sec.id && state.selectedTypologies.includes(m.typology)
+                );
+                
+                // Medidas personalizadas agregadas a esta sección
+                const customs = state.customMeasures[sec.id] || [];
+
+                const currentSelected = state.selectedMeasures[sec.id] || [];
+
+                return `
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden transition-all duration-200">
+                        
+                        <!-- Header del Apartado -->
+                        <div class="bg-slate-50 border-b border-slate-200 p-3.5 flex flex-wrap justify-between items-center gap-2">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center text-xs">
+                                    ${sec.id}
+                                </span>
+                                <h3 class="font-bold text-sm text-slate-800">${sec.title}</h3>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="openCustomModal(${sec.id})" class="px-2.5 py-1 bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded text-xs font-medium transition flex items-center gap-1 shadow-xs">
+                                    <i class="fa-solid fa-plus text-emerald-600"></i> Añadir opción
+                                </button>
+                                <button onclick="copySectionText(${sec.id})" class="px-2.5 py-1 bg-seneca-600 hover:bg-seneca-700 text-white rounded text-xs font-medium transition flex items-center gap-1 shadow-xs">
+                                    <i class="fa-solid fa-copy"></i> Copiar apartado
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Opciones Checkbox -->
+                        <div class="p-4 space-y-2.5 text-xs">
+                            ${availableDb.map((m, idx) => {
+                                const isChecked = currentSelected.includes(m.text);
+                                const typObj = TYPOLOGIES.find(t => t.id === m.typology);
+                                return `
+                                    <label class="flex items-start gap-3 p-2 rounded-lg hover:bg-slate-50 cursor-pointer border border-transparent hover:border-slate-200 transition">
+                                        <input type="checkbox" 
+                                               data-section-id="${sec.id}"
+                                               data-measure-text="${escapeHtml(m.text)}"
+                                               ${isChecked ? 'checked' : ''}
+                                               class="mt-0.5 rounded text-emerald-600 focus:ring-emerald-500 h-4 w-4 border-slate-300">
+                                        <div class="flex-1">
+                                            <span class="text-slate-800 leading-snug block">${escapeHtml(m.text)}</span>
+                                            ${typObj ? `<span class="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] font-semibold ${typObj.badgeBg}">${escapeHtml(typObj.label)}</span>` : ''}
+                                        </div>
+                                    </label>
+                                `;
+                            }).join('')}
+
+                            ${customs.map((cText, idx) => {
+                                const isChecked = currentSelected.includes(cText);
+                                const customTypologies = state.customTypologies[customTypologyKey(sec.id, cText)] || [];
+                                const typologyLabels = customTypologies.map(id => getTypologyInfo(id).short);
+                                return `
+                                    <div class="flex items-start gap-3 p-2 rounded-lg bg-emerald-50/50 border border-emerald-200 transition">
+                                      <label class="flex flex-1 items-start gap-3 cursor-pointer">
+                                        <input type="checkbox" 
+                                               data-section-id="${sec.id}"
+                                               data-measure-text="${escapeHtml(cText)}"
+                                               ${isChecked ? 'checked' : ''}
+                                               class="mt-0.5 rounded text-emerald-600 focus:ring-emerald-500 h-4 w-4 border-slate-300">
+                                        <div class="flex-1">
+                                            <span class="text-slate-800 leading-snug font-medium">${escapeHtml(cText)}</span>
+                                            <div class="flex flex-wrap items-center gap-1 mt-1">
+                                                <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-200 text-emerald-900">Personalizado</span>
+                                                ${typologyLabels.length
+                                                    ? typologyLabels.map(label => `<span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-200 text-slate-700">${escapeHtml(label)}</span>`).join('')
+                                                    : '<span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-600">Sin tipología</span>'}
+                                            </div>
+                                        </div>
+                                      </label>
+                                      <button type="button" onclick="openCustomTypologies(${sec.id}, ${idx})" class="mt-1 text-[11px] text-emerald-700 underline">Tipologías</button>
+                                    </div>
+                                `;
+                            }).join('')}
+
+                            ${availableDb.length === 0 && customs.length === 0 ? `
+                                <p class="text-slate-400 italic text-center py-2">No hay sugerencias. Selecciona una tipología arriba o haz clic en "Añadir opción" para personalizar este apartado.</p>
+                            ` : ''}
+                        </div>
+
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function escapeHtml(value) {
+            return String(value).replace(/[&<>"']/g, character => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            })[character]);
+        }
+
+        function toggleMeasure(sectionId, text) {
+            const list = state.selectedMeasures[sectionId] || [];
+            const idx = list.indexOf(text);
+            if (idx > -1) {
+                list.splice(idx, 1);
+            } else {
+                list.push(text);
+            }
+            state.selectedMeasures[sectionId] = list;
+            updateOutput();
+        }
+
+        const TYPOLOGY_INFO = {
+            tdah: { short: 'TDAH', neae: true },
+            dea_lectura: { short: 'Dislexia', neae: true },
+            dea_escritura: { short: 'Disgrafía', neae: true },
+            dea_calculo: { short: 'Discalculia', neae: true },
+            nee_intelectual: { short: 'Discapacidad intelectual', neae: true },
+            nee_tea: { short: 'TEA', neae: true },
+            nee_sensorial: { short: 'Discapacidad sensorial/motora', neae: true },
+            alcain: { short: 'Altas capacidades', neae: true },
+            ecophe: { short: 'ECOPHE / Incorporación tardía', neae: true },
+            pendientes: { short: 'Materia pendiente', neae: false },
+            repetidor: { short: 'Repetidor', neae: false },
+            general: { short: 'Refuerzo ordinario general', neae: false }
+        };
+
+        function getTypologyInfo(id) {
+            return TYPOLOGY_INFO[id] || { short: id, neae: false };
+        }
+
+        function customTypologyKey(sectionId, text) {
+            return `${sectionId}|${text}`;
+        }
+
+        function getActiveTypologyIds() {
+            return TYPOLOGIES.map(t => t.id).filter(id => state.selectedTypologies.includes(id));
+        }
+
+        function getTypologyHeader() {
+            const active = getActiveTypologyIds();
+            if (!active.length) return '';
+            const labels = [];
+            if (active.some(id => getTypologyInfo(id).neae)) labels.push('NEAE');
+            active.forEach(id => labels.push(getTypologyInfo(id).short));
+            return `ALUMNO/A CON: ${labels.join(' | ').toUpperCase()}`;
+        }
+
+        function typologyGroupLabel(ids) {
+            const neae = ids.filter(id => getTypologyInfo(id).neae).map(id => getTypologyInfo(id).short);
+            const other = ids.filter(id => !getTypologyInfo(id).neae).map(id => getTypologyInfo(id).short);
+            const join = labels => labels.length > 1
+                ? `${labels.slice(0, -1).join(', ')} y ${labels[labels.length - 1]}`
+                : labels[0];
+            const groups = [];
+            if (neae.length) groups.push(`NEAE con ${join(neae)}`);
+            if (other.length) groups.push(join(other));
+            return `Por ser alumno/a ${groups.join(' y ')}:`;
+        }
+
+        function getGroupedMeasures(sectionId) {
+            const active = getActiveTypologyIds();
+            const groups = new Map();
+            (state.selectedMeasures[sectionId] || []).forEach(text => {
+                const customIds = state.customTypologies[customTypologyKey(sectionId, text)] || [];
+                const typologies = active.filter(id =>
+                    customIds.includes(id) ||
+                    MEASURES_DATABASE.some(item =>
+                        item.sectionId === sectionId && item.typology === id && item.text === text
+                    )
+                );
+                const key = typologies.join(',');
+                if (!groups.has(key)) groups.set(key, { typologies, measures: [] });
+                const group = groups.get(key);
+                if (!group.measures.includes(text)) group.measures.push(text);
+            });
+            return [...groups.values()].sort((a, b) => {
+                if (!a.typologies.length || !b.typologies.length) return a.typologies.length ? -1 : 1;
+                return TYPOLOGIES.findIndex(t => t.id === a.typologies[0]) -
+                    TYPOLOGIES.findIndex(t => t.id === b.typologies[0]);
+            });
+        }
+
+        function getCenterLogoSrc() {
+            if (state.center.logo) return state.center.logo;
+            return state.center.name.trim() === DEFAULT_CENTER_NAME ? DEFAULT_CENTER_LOGO : '';
+        }
+
+        function renderDocumentHeader() {
+            const logo = getCenterLogoSrc();
+            const metadata = [
+                ['Iniciales del alumno/a', state.student.name],
+                ['Materia', state.student.subject],
+                ['Curso', state.student.course],
+                ['Grupo', state.student.group],
+                ['Profesor/a', state.student.teacher]
+            ];
+            return `
+                <header class="print-header mb-6 rounded-xl border border-slate-200 border-t-4 border-t-seneca-800 bg-white p-4">
+                    <div class="flex flex-col items-start gap-4 border-b border-slate-200 pb-3 sm:flex-row sm:items-center sm:justify-between">
+                        ${logo ? `<img src="${logo}" alt="Logotipo de ${escapeHtml(state.center.name)}" class="print-header-logo max-h-16 max-w-48 object-contain">` : '<span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Programa educativo</span>'}
+                        <div class="w-full min-w-0 text-left sm:flex-1 sm:text-right">
+                            <p class="text-xs font-semibold uppercase tracking-widest text-slate-500">Documento educativo</p>
+                            <h2 class="mt-1 text-lg font-bold text-slate-800">${escapeHtml(state.center.name || 'Centro educativo')}</h2>
+                            <p class="text-sm font-semibold text-seneca-800">Programa de Refuerzo de los Aprendizajes</p>
+                        </div>
+                    </div>
+                    <dl class="mt-3 grid grid-cols-2 gap-x-5 gap-y-2 text-xs sm:grid-cols-3">
+                        ${metadata.map(([label, value]) => `
+                            <div>
+                                <dt class="font-semibold uppercase tracking-wide text-slate-500">${label}</dt>
+                                <dd class="mt-0.5 font-medium text-slate-800">${escapeHtml(value || '—')}</dd>
+                            </div>
+                        `).join('')}
+                    </dl>
+                </header>
+            `;
+        }
+
+        function getFormattedSectionText(sectionId) {
+            const measures = state.selectedMeasures[sectionId] || [];
+            let body;
+            if (!measures.length) {
+                body = '- No se especifica actuación diferenciada.';
+            } else if (!state.groupByTypology) {
+                body = measures.map(text => `- ${text}`).join('\n');
+            } else {
+                const groups = getGroupedMeasures(sectionId);
+                const onlyUnclassified = groups.length === 1 && !groups[0].typologies.length;
+                body = groups.map(group => {
+                    const lines = group.measures.map(text => `- ${text}`).join('\n');
+                    if (onlyUnclassified) return lines;
+                    const label = group.typologies.length
+                        ? typologyGroupLabel(group.typologies)
+                        : 'Otras medidas:';
+                    return `${label}\n${lines}`;
+                }).join('\n\n');
+            }
+            const header = getTypologyHeader();
+            return header ? `${header}\n\n${body}` : body;
+        }
+
+        function updateOutput() {
+            // Leer valores del alumno
+            state.student.name = document.getElementById('studentName').value.trim();
+            state.student.subject = document.getElementById('subjectName').value.trim();
+            state.student.course = document.getElementById('courseName').value.trim();
+            state.student.group = document.getElementById('groupName').value.trim();
+            state.student.teacher = document.getElementById('teacherName').value.trim();
+            state.center.name = document.getElementById('schoolName').value.trim();
+            updateSchoolLogoPreview();
+
+            const previewEl = document.getElementById('outputPreview');
+            let fullText = "";
+
+            // Header si se han rellenado datos
+            const headerHtml = renderDocumentHeader();
+
+            let sectionsHtml = "";
+
+            SENECA_SECTIONS.forEach(sec => {
+                const secTextContent = getFormattedSectionText(sec.id);
+
+                sectionsHtml += `
+                    <section class="print-section space-y-1 border-b border-slate-100 pb-3 last:border-0">
+                        <h4 class="font-bold text-slate-800 uppercase text-xs text-emerald-800 flex items-center justify-between">
+                            <span>${sec.title}</span>
+                            <button onclick="copySectionText(${sec.id})" class="no-print text-[11px] text-slate-400 hover:text-emerald-600 font-normal underline">
+                                Copiar
+                            </button>
+                        </h4>
+                        <div class="print-section-content whitespace-pre-line text-slate-700 text-xs pl-2 border-l-2 border-emerald-500/30">
+                            ${escapeHtml(secTextContent)}
+                        </div>
+                    </section>
+                `;
+            });
+            previewEl.innerHTML = headerHtml + sectionsHtml;
+            previewEl.innerHTML = headerHtml + sectionsHtml;
+        }
+
+        function copySectionText(sectionId) {
+            const textToCopy = getFormattedSectionText(sectionId);
+            copyToClipboardAndNotify(textToCopy, `Apartado ${sectionId} copiado al portapapeles`);
+        }
+
+        function generateFullDocumentText() {
+            let doc = `${state.center.name || 'Centro educativo'}\n`;
+            doc += `PROGRAMA DE REFUERZO DE LOS APRENDIZAJES (PRA)\n`;
+            doc += `Iniciales del alumno/a: ${state.student.name || '---'}\n`;
+            doc += `Materia: ${state.student.subject || '---'}\n`;
+            doc += `Curso: ${state.student.course || '---'}\n`;
+            doc += `Grupo: ${state.student.group || '---'}\n`;
+            doc += `Profesor/a: ${state.student.teacher || '---'}\n`;
+            doc += `-----------------------------------------------\n\n`;
+
+            SENECA_SECTIONS.forEach(sec => {
+                doc += `${sec.title}\n`;
+                doc += `${getFormattedSectionText(sec.id)}\n\n`;
+            });
+
+            return doc;
+        }
+
+        function copyAllText() {
+            const fullText = generateFullDocumentText();
+            copyToClipboardAndNotify(fullText, "Informe completo copiado al portapapeles");
+        }
+
+        async function copyToClipboardAndNotify(text, successMessage) {
+            if (navigator.clipboard && window.isSecureContext) {
+                try {
+                    await navigator.clipboard.writeText(text);
+                    showToast(successMessage);
+                    return;
+                } catch (error) {
+                    console.warn('El portapapeles moderno no está disponible; se probará el método alternativo.', error);
+                }
+            }
+
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-999999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            let copied = false;
+            try {
+                copied = document.execCommand('copy');
+            } catch (error) {
+                console.error('Error al copiar al portapapeles.', error);
+            } finally {
+                document.body.removeChild(textArea);
+            }
+            if (copied) {
+                showToast(successMessage);
+            } else {
+                showToast("No se pudo copiar. Selecciona y copia el texto manualmente.", "fa-triangle-exclamation", "text-amber-400");
+            }
+        }
+
+        function printDocument() {
+            window.print();
+        }
+
+        function downloadTextFile() {
+            const text = generateFullDocumentText();
+            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const safeName = state.student.name.replace(/[<>:"/\\|?*\u0000-\u001f]/g, '_').replace(/[. ]+$/g, '').trim();
+            const filename = safeName ? `PRA_${safeName.replace(/\s+/g, '_')}.txt` : 'Programa_Refuerzo_PRA_Seneca.txt';
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast("Archivo descargado con éxito");
+        }
+
+        function openCustomModal(sectionId) {
+            const modal = document.getElementById('customItemModal');
+            const select = document.getElementById('modalSectionSelect');
+            modal.dataset.mode = 'add';
+            
+            select.innerHTML = SENECA_SECTIONS.map(s => 
+                `<option value="${s.id}" ${s.id === sectionId ? 'selected' : ''}>${s.title}</option>`
+            ).join('');
+
+            document.getElementById('customSectionField').classList.remove('hidden');
+            document.getElementById('customTextField').classList.remove('hidden');
+            document.getElementById('modalTitle').textContent = 'Añadir propuesta personalizada';
+            document.getElementById('modalSaveButton').textContent = 'Añadir Medida';
+            document.getElementById('modalItemText').value = "";
+            renderCustomTypologyOptions([]);
+            modal.classList.remove('hidden');
+        }
+
+        function renderCustomTypologyOptions(selectedIds) {
+            const container = document.getElementById('customTypologyOptions');
+            const groups = [
+                { title: 'NEAE', items: TYPOLOGIES.filter(t => getTypologyInfo(t.id).neae) },
+                { title: 'Otras situaciones', items: TYPOLOGIES.filter(t => !getTypologyInfo(t.id).neae) }
+            ];
+            container.innerHTML = groups.map(group => `
+                <fieldset class="space-y-1">
+                    <legend class="text-xs font-bold text-slate-700">${group.title}</legend>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-1">
+                        ${group.items.map(t => `
+                            <label class="flex items-center gap-2 text-xs text-slate-700">
+                                <input type="checkbox" value="${t.id}" ${selectedIds.includes(t.id) ? 'checked' : ''}>
+                                ${escapeHtml(getTypologyInfo(t.id).short)}
+                            </label>
+                        `).join('')}
+                    </div>
+                </fieldset>
+            `).join('');
+        }
+
+        function openCustomTypologies(sectionId, customIndex) {
+            const text = state.customMeasures[sectionId][customIndex];
+            const modal = document.getElementById('customItemModal');
+            modal.dataset.mode = 'typologies';
+            modal.dataset.sectionId = sectionId;
+            modal.dataset.customIndex = customIndex;
+            document.getElementById('customSectionField').classList.add('hidden');
+            document.getElementById('customTextField').classList.add('hidden');
+            document.getElementById('modalTitle').textContent = 'Tipologías de la medida';
+            document.getElementById('modalSaveButton').textContent = 'Guardar cambios';
+            renderCustomTypologyOptions(state.customTypologies[customTypologyKey(sectionId, text)] || []);
+            modal.classList.remove('hidden');
+        }
+
+        function closeCustomModal() {
+            document.getElementById('customItemModal').classList.add('hidden');
+        }
+
+        function saveCustomItem() {
+            const modal = document.getElementById('customItemModal');
+            const typologies = [...document.querySelectorAll('#customTypologyOptions input:checked')].map(input => input.value);
+            if (modal.dataset.mode === 'typologies') {
+                const secId = Number(modal.dataset.sectionId);
+                const customIndex = Number(modal.dataset.customIndex);
+                const text = state.customMeasures[secId][customIndex];
+                state.customTypologies[customTypologyKey(secId, text)] = typologies;
+                closeCustomModal();
+                renderSections();
+                updateOutput();
+                showToast("Tipologías actualizadas");
+                return;
+            }
+            const secId = parseInt(document.getElementById('modalSectionSelect').value);
+            const text = document.getElementById('modalItemText').value.trim();
+
+            if (!text) {
+                showToast("Por favor escribe una descripción para la medida", "fa-triangle-exclamation", "text-amber-400");
+                return;
+            }
+
+            if (!state.customMeasures[secId]) {
+                state.customMeasures[secId] = [];
+            }
+            state.customMeasures[secId].push(text);
+            
+            // Seleccionar automáticamente la recién creada
+            if (!state.selectedMeasures[secId]) {
+                state.selectedMeasures[secId] = [];
+            }
+            state.selectedMeasures[secId].push(text);
+            state.customTypologies[customTypologyKey(secId, text)] = typologies;
+
+            closeCustomModal();
+            renderSections();
+            updateOutput();
+            showToast("Propuesta personalizada añadida");
+        }
+
+        // Guardado local
+        function saveDraft() {
+            try {
+                localStorage.setItem('seneca_pra_draft', JSON.stringify(state));
+                showToast("Borrador guardado localmente");
+            } catch (e) {
+                showToast("No se pudo guardar en este navegador", "fa-triangle-exclamation", "text-amber-400");
+            }
+        }
+
+        function loadDraft() {
+            try {
+                const saved = localStorage.getItem('seneca_pra_draft');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    state = {
+                        ...state,
+                        ...parsed,
+                        customTypologies: parsed.customTypologies || {},
+                        groupByTypology: parsed.groupByTypology !== false,
+                        center: { name: DEFAULT_CENTER_NAME, logo: '', ...(parsed.center || {}) },
+                        student: {
+                            name: parsed.student?.name || '',
+                            subject: parsed.student?.subject || '',
+                            course: parsed.student?.course || '',
+                            group: parsed.student?.group || '',
+                            teacher: parsed.student?.teacher || ''
+                        }
+                    };
+                    document.getElementById('studentName').value = state.student.name || '';
+                    document.getElementById('subjectName').value = state.student.subject || '';
+                    document.getElementById('courseName').value = state.student.course || '';
+                    document.getElementById('groupName').value = state.student.group || '';
+                    document.getElementById('teacherName').value = state.student.teacher || '';
+                    document.getElementById('schoolName').value = state.center.name;
+                    document.getElementById('groupByTypology').checked = state.groupByTypology !== false;
+                    initTypologyChips();
+                    renderSections();
+                    updateSchoolLogoPreview();
+                    updateOutput();
+                    showToast("Borrador cargado correctamente");
+                } else {
+                    showToast("No hay ningún borrador guardado previo", "fa-circle-info", "text-blue-400");
+                }
+            } catch (e) {
+                showToast("Error al cargar borrador", "fa-circle-xmark", "text-red-400");
+            }
+        }
+
+        function resetAll() {
+            if (confirm("¿Estás seguro de reiniciar todos los datos e introducciones?")) {
+                state.selectedTypologies = [];
+                state.groupByTypology = true;
+                state.customTypologies = {};
+                state.center = { name: DEFAULT_CENTER_NAME, logo: '' };
+                document.getElementById('studentName').value = '';
+                document.getElementById('subjectName').value = '';
+                document.getElementById('courseName').value = '';
+                document.getElementById('groupName').value = '';
+                document.getElementById('teacherName').value = '';
+                document.getElementById('schoolName').value = DEFAULT_CENTER_NAME;
+                document.getElementById('groupByTypology').checked = true;
+                initSelectionsState();
+                initTypologyChips();
+                renderSections();
+                updateOutput();
+                showToast("Aplicación reiniciada");
+            }
+        }
+
+        function showToast(message, iconClass = "fa-circle-check", iconColor = "text-emerald-400") {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
+
+            toastMsg.textContent = message;
+            toastIcon.className = `fa-solid ${iconClass} ${iconColor} text-lg`;
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2800);
+        }
+    </script>
+</body>
+</html>

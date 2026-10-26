@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f5f0">
+  <meta name="description" content="Prepara los Programas de Refuerzo de los Aprendizajes: crea informes en PDF o rellena Séneca con la extensión PRA.">
+  <title>Programas de Refuerzo de los Aprendizajes · PRA</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #18352f;
+      --muted: #66746d;
+      --green: #245747;
+      --green-dark: #183e34;
+      --green-soft: #e7efe9;
+      --gold: #c59752;
+      --paper: #f7f5f0;
+      --white: #fff;
+      --line: #e4e5de;
+      --shadow: 0 18px 48px rgba(24, 53, 47, .09);
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      scroll-behavior: smooth;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); line-height: 1.6; }
+    a { color: inherit; }
+    img { max-width: 100%; }
+    .wrap { width: min(1120px, calc(100% - 40px)); margin-inline: auto; }
+    .topbar { padding: 18px 0; }
+    .brand { display: inline-flex; align-items: center; gap: 14px; text-decoration: none; }
+    .brand img { width: 190px; max-height: 68px; object-fit: contain; object-position: left center; }
+    .hero { position: relative; overflow: hidden; padding: 64px 0 76px; background: var(--green-dark); color: var(--white); }
+    .hero::after { position: absolute; top: -220px; right: -100px; width: 600px; height: 600px; border: 1px solid rgba(255,255,255,.12); border-radius: 50%; content: ""; box-shadow: 0 0 0 54px rgba(255,255,255,.025), 0 0 0 110px rgba(255,255,255,.025); pointer-events: none; }
+    .hero-content { position: relative; z-index: 1; max-width: 1000px; }
+    .eyebrow { margin: 0 0 16px; color: #dfc58d; font-size: .76rem; font-weight: 750; letter-spacing: .16em; text-transform: uppercase; }
+    h1 { max-width: 1000px; margin: 0; color: #dfc58d; font-family: Georgia, "Times New Roman", serif; font-size: clamp(3rem, 7.5vw, 6rem); font-weight: 500; letter-spacing: -.045em; line-height: 1.02; }
+    .hero-copy { max-width: 660px; margin: 22px 0 28px; color: #e1e9e3; font-size: clamp(1rem, 2vw, 1.16rem); }
+    .button { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: 10px; border: 1px solid transparent; border-radius: 999px; padding: 11px 19px; font: inherit; font-size: .92rem; font-weight: 700; text-decoration: none; transition: transform .18s ease, background .18s ease, box-shadow .18s ease; }
+    .button:hover { transform: translateY(-2px); }
+    .button-light { background: var(--white); color: var(--green-dark); box-shadow: 0 8px 18px rgba(0,0,0,.12); }
+    .button-outline { border-color: rgba(255,255,255,.45); color: var(--white); }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    .hero-note { margin: 20px 0 0; color: #bfcfc4; font-size: .8rem; }
+    .section { padding: 70px 0; }
+    .section-heading { max-width: 680px; margin: 0 auto 32px; text-align: center; }
+    .section-heading .eyebrow { margin-bottom: 9px; color: var(--green); }
+    h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 500; letter-spacing: -.035em; line-height: 1.15; }
+    .section-heading p { margin: 13px 0 0; color: var(--muted); }
+    .options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+    .option-card { display: flex; min-height: 100%; flex-direction: column; border: 1px solid var(--line); border-radius: 20px; background: var(--white); padding: 28px; box-shadow: var(--shadow); }
+    .option-icon { display: grid; width: 50px; height: 50px; place-items: center; border-radius: 15px; background: var(--green-soft); color: var(--green); font-size: 1.35rem; }
+    .option-card h3 { margin: 18px 0 8px; font-family: Georgia, "Times New Roman", serif; font-size: 1.55rem; font-weight: 600; }
+    .option-card p { margin: 0; color: var(--muted); }
+    .option-card ul { display: grid; gap: 9px; margin: 20px 0 25px; padding: 0; list-style: none; color: #40554c; font-size: .91rem; }
+    .option-card li { display: flex; gap: 9px; align-items: flex-start; }
+    .option-card li::before { content: "✓"; color: var(--green); font-weight: 800; }
+    .option-card .button { width: fit-content; margin-top: auto; }
+    .button-green { background: var(--green); color: var(--white); }
+    .button-green:hover { background: var(--green-dark); }
+    .button-gold { background: #f2ead9; color: #664a22; }
+    .video-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-top: 28px; }
+    .video-card { display: block; border: 1px solid var(--line); border-radius: 16px; background: rgba(255,255,255,.72); padding: 20px; }
+    .video-frame { position: relative; aspect-ratio: 16 / 9; margin-bottom: 14px; overflow: hidden; border-radius: 10px; background: #000; }
+    .video-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .video-icon { display: grid; width: 42px; height: 42px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: #f8e8e5; color: #a64235; font-size: 1rem; }
+    .video-card h3 { margin: 0 0 4px; font-size: .98rem; }
+    .video-card p { margin: 0; color: var(--muted); font-size: .88rem; }
+    .soon { display: inline-block; margin-top: 9px; color: #81683f; font-size: .78rem; font-weight: 750; letter-spacing: .03em; }
+    .presentation { background: #eceee8; }
+    .presentation-panel { overflow: hidden; border: 1px solid #dfe2da; border-radius: 20px; background: var(--white); box-shadow: var(--shadow); }
+    .presentation-frame { width: 100%; aspect-ratio: 1280 / 749; min-height: 300px; border: 0; display: block; background: #e8ebe5; }
+    .presentation-caption { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; padding: 18px 22px; }
+    .presentation-caption p { margin: 0; color: var(--muted); font-size: .9rem; }
+    .text-link { color: var(--green); font-weight: 700; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    .privacy-note { margin-top: 26px; border-left: 3px solid var(--gold); border-radius: 0 12px 12px 0; background: #f0ece1; padding: 15px 18px; color: #5f5a4c; font-size: .89rem; }
+    footer { padding: 30px 0 36px; border-top: 1px solid var(--line); text-align: center; }
+    footer img { width: 180px; max-height: 82px; object-fit: contain; }
+    footer p { margin: 10px 0 0; color: var(--muted); font-size: .82rem; }
+    footer a { color: var(--green); font-weight: 650; }
+    :focus-visible { outline: 3px solid #d7ae65; outline-offset: 3px; }
+
+    @media (max-width: 700px) {
+      .wrap { width: min(100% - 28px, 520px); }
+      .topbar { padding: 13px 0; }
+      .brand img { width: 150px; }
+      .hero { padding: 48px 0 56px; }
+      .section { padding: 54px 0; }
+      .options, .video-row { grid-template-columns: 1fr; }
+      .option-card { padding: 24px; }
+      .presentation-frame { min-height: 240px; }
+      .presentation-caption { align-items: flex-start; flex-direction: column; padding: 16px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="./index.html" aria-label="PRA, inicio">
+        <img src="./Logo_Comares_Color_Horizontal%20(1).png" alt="IES Marqués de Comares">
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap hero-content">
+        <h1>Programa de Refuerzo de los Aprendizajes</h1>
+        <p class="hero-copy">Dos formas sencillas de preparar tus medidas para Séneca: crea un informe para revisar, imprimir o guardar en PDF, o completa los apartados directamente con la extensión de Chrome.</p>
+        <div class="hero-actions">
+          <a class="button button-light" href="#opciones">Descubrir las dos opciones <span aria-hidden="true">↓</span></a>
+          <a class="button button-outline" href="#presentacion">Conocer el proyecto</a>
+        </div>
+        <p class="hero-note">Herramienta gratuita · Los datos se procesan en tu navegador</p>
+      </div>
+    </section>
+
+    <section class="section" id="opciones">
+      <div class="wrap">
+        <div class="section-heading">
+          <p class="eyebrow">Elige cómo quieres trabajar</p>
+          <h2>Dos caminos, un mismo objetivo</h2>
+          <p>Selecciona el formato que mejor se adapte a tu trabajo. Puedes utilizar uno u otro según lo que necesites.</p>
+        </div>
+
+        <div class="options">
+          <article class="option-card">
+            <div class="option-icon" aria-hidden="true">▤</div>
+            <h3>Crear un informe en PDF</h3>
+            <p>Prepara el informe con calma, personalízalo y conserva una copia para revisar o compartir según los procedimientos de tu centro.</p>
+            <ul>
+              <li>Selecciona tipologías y medidas sugeridas.</li>
+              <li>Personaliza el nombre y logotipo de tu centro.</li>
+              <li>Incluye iniciales, materia, curso, grupo y profesor/a.</li>
+              <li>Imprime o guarda el documento como PDF.</li>
+            </ul>
+            <a class="button button-green" href="./generador.html">Abrir el generador de informes <span aria-hidden="true">→</span></a>
+          </article>
+
+          <article class="option-card">
+            <div class="option-icon" aria-hidden="true">↗</div>
+            <h3>Rellenar Séneca con Chrome</h3>
+            <p>Elige las medidas en el panel lateral y pásalas directamente a los campos del Programa de Refuerzo en Séneca.</p>
+            <ul>
+              <li>Agrupa las medidas por tipología y evita repeticiones.</li>
+              <li>Añade medidas propias y asígnales tipologías.</li>
+              <li>Rellena un apartado o los cinco de una vez.</li>
+              <li>Exporta e importa tus medidas y preferencias.</li>
+            </ul>
+            <span class="button button-gold" aria-disabled="true">Enlace de instalación próximamente</span>
+            <p class="soon">La extensión está publicada como no listada. Añadiremos aquí el enlace directo de Chrome Web Store.</p>
+          </article>
+        </div>
+
+        <div class="video-row" aria-label="Tutoriales en vídeo">
+          <article class="video-card">
+            <div class="video-frame"><iframe src="https://www.youtube.com/embed/Iz-auj3436E" title="Tutorial: crear el informe en PDF" loading="lazy" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+            <h3>Tutorial: crear el informe en PDF</h3>
+            <p>Cómo preparar, personalizar y guardar el informe en PDF.</p>
+          </article>
+          <article class="video-card">
+            <div class="video-frame"><iframe src="https://www.youtube.com/embed/8TZUcsEJghQ" title="Tutorial: usar la extensión en Séneca" loading="lazy" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+            <h3>Tutorial: usar la extensión en Séneca</h3>
+            <p>Cómo utilizar la extensión para rellenar los apartados de Séneca.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section presentation" id="presentacion">
+      <div class="wrap">
+        <div class="section-heading">
+          <p class="eyebrow">El origen de este recurso</p>
+          <h2>Una propuesta para apoyar el aprendizaje</h2>
+          <p>El programa se ha elaborado tomando como referencia esta presentación sobre los Programas de Refuerzo de los Aprendizajes.</p>
+        </div>
+        <div class="presentation-panel">
+          <iframe
+            class="presentation-frame"
+            src="https://docs.google.com/presentation/d/e/2PACX-1vTUOOKJ-Lp1gvB6zQZunNJ0k4Qh9GipNycrqe0082Oa21IdQi79-sjpCJOsLf9EA9wyCY4RcBlQVU7k/pubembed?start=false&amp;loop=false&amp;delayms=3000"
+            title="Presentación de referencia sobre los Programas de Refuerzo de los Aprendizajes"
+            loading="lazy"
+            allowfullscreen="true">
+          </iframe>
+          <div class="presentation-caption">
+            <p>Presentación de referencia utilizada para la elaboración de este recurso.</p>
+            <a class="text-link" href="https://docs.google.com/presentation/d/1Jqb0a2daAcAahggAgpCVN_IayaOB4yKEFzpl014QCHo/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Abrir presentación de Google Slides ↗</a>
+          </div>
+        </div>
+        <p class="privacy-note"><strong>Privacidad:</strong> los datos que introduzcas en el generador se procesan en el navegador. Si guardas un borrador, queda en el almacenamiento local de tu dispositivo. Evita introducir información personal innecesaria y sigue las normas de protección de datos de tu centro.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <img src="./nombreserendipia.jpg" alt="Serendiphia.es · Rafael Cabrera">
+      <p>Un recurso creado por Rafael Cabrera · <a href="https://twitter.com/rcabreratic" target="_blank" rel="noopener noreferrer">@rcabreratic</a></p>
+      <p>Extensión independiente, no afiliada a la Junta de Andalucía ni a Séneca.</p>
+      <p><a href="./privacidad.html">Política de privacidad</a></p>
+    </div>
+  </footer>
+</body>
+</html>
