@@ -67,6 +67,15 @@
     .video-card h3 { margin: 0 0 4px; font-size: .98rem; }
     .video-card p { margin: 0; color: var(--muted); font-size: .88rem; }
     .presentation { background: #eceee8; }
+    .embed-gate { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 16px; text-align: center; background: #1f2a24; color: #fff; }
+    .embed-gate { background: #1f2a24 var(--thumb, none) center / cover no-repeat; }
+    .embed-gate::before { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.85), rgba(0,0,0,.15) 70%); }
+    .embed-gate > * { position: relative; }
+    .embed-gate p { margin: 0; font-size: .85rem; max-width: 36ch; opacity: .85; }
+    .embed-gate button { cursor: pointer; border: 0; border-radius: 999px; padding: 10px 20px; font: inherit; font-weight: 700; background: #fff; color: #1f2a24; }
+    .embed-gate button:focus-visible { outline: 3px solid #8fd19e; outline-offset: 2px; }
+    .presentation-embed { position: relative; aspect-ratio: 1280 / 749; min-height: 300px; }
+    .presentation-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
     .presentation-panel { overflow: hidden; border: 1px solid #dfe2da; border-radius: 20px; background: var(--white); box-shadow: var(--shadow); }
     .presentation-frame { width: 100%; aspect-ratio: 1280 / 749; min-height: 300px; border: 0; display: block; background: #e8ebe5; }
     .presentation-caption { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; padding: 18px 22px; }
@@ -156,12 +165,16 @@
 
         <div class="video-row" aria-label="Tutoriales en vídeo">
           <article class="video-card">
-            <div class="video-frame"><iframe src="https://www.youtube.com/embed/Iz-auj3436E" title="Tutorial: crear el informe en PDF" loading="lazy" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+            <div class="video-frame" data-embed="https://www.youtube-nocookie.com/embed/Iz-auj3436E?autoplay=1" data-title="Tutorial: crear el informe en PDF" data-allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
+              <div class="embed-gate" style="--thumb: url('./video-Iz-auj3436E.jpg')"><p>Al cargar el vídeo se conectará con YouTube (modo sin cookies).</p><button type="button">▶ Cargar vídeo</button></div>
+            </div>
             <h3>Tutorial: crear el informe en PDF</h3>
             <p>Cómo preparar, personalizar y guardar el informe en PDF.</p>
           </article>
           <article class="video-card">
-            <div class="video-frame"><iframe src="https://www.youtube.com/embed/8TZUcsEJghQ" title="Tutorial: usar la extensión en Séneca" loading="lazy" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+            <div class="video-frame" data-embed="https://www.youtube-nocookie.com/embed/8TZUcsEJghQ?autoplay=1" data-title="Tutorial: usar la extensión en Séneca" data-allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
+              <div class="embed-gate" style="--thumb: url('./video-8TZUcsEJghQ.jpg')"><p>Al cargar el vídeo se conectará con YouTube (modo sin cookies).</p><button type="button">▶ Cargar vídeo</button></div>
+            </div>
             <h3>Tutorial: usar la extensión en Séneca</h3>
             <p>Cómo utilizar la extensión para rellenar los apartados de Séneca.</p>
           </article>
@@ -177,13 +190,9 @@
           <p>El programa se ha elaborado tomando como referencia esta presentación sobre los Programas de Refuerzo de los Aprendizajes.</p>
         </div>
         <div class="presentation-panel">
-          <iframe
-            class="presentation-frame"
-            src="https://docs.google.com/presentation/d/e/2PACX-1vTUOOKJ-Lp1gvB6zQZunNJ0k4Qh9GipNycrqe0082Oa21IdQi79-sjpCJOsLf9EA9wyCY4RcBlQVU7k/pubembed?start=false&amp;loop=false&amp;delayms=3000"
-            title="Presentación de referencia sobre los Programas de Refuerzo de los Aprendizajes"
-            loading="lazy"
-            allowfullscreen="true">
-          </iframe>
+          <div class="presentation-embed" data-embed="https://docs.google.com/presentation/d/e/2PACX-1vTUOOKJ-Lp1gvB6zQZunNJ0k4Qh9GipNycrqe0082Oa21IdQi79-sjpCJOsLf9EA9wyCY4RcBlQVU7k/pubembed?start=false&amp;loop=false&amp;delayms=3000" data-title="Presentación de referencia sobre los Programas de Refuerzo de los Aprendizajes" data-allow="fullscreen">
+            <div class="embed-gate" style="--thumb: url('./presentacion-portada.png')"><p>Al cargar la presentación se conectará con Google Slides.</p><button type="button">Cargar presentación</button></div>
+          </div>
           <div class="presentation-caption">
             <p>Presentación de referencia utilizada para la elaboración de este recurso.</p>
             <a class="text-link" href="https://docs.google.com/presentation/d/1Jqb0a2daAcAahggAgpCVN_IayaOB4yKEFzpl014QCHo/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Abrir presentación de Google Slides ↗</a>
@@ -202,5 +211,19 @@
       <p><a href="./privacidad.html">Política de privacidad</a></p>
     </div>
   </footer>
+  <script>
+    document.querySelectorAll('[data-embed]').forEach(function (box) {
+      box.querySelector('.embed-gate button').addEventListener('click', function () {
+        var f = document.createElement('iframe');
+        f.src = box.dataset.embed;
+        f.title = box.dataset.title;
+        f.allow = box.dataset.allow;
+        f.referrerPolicy = 'strict-origin-when-cross-origin';
+        f.allowFullscreen = true;
+        box.replaceChildren(f);
+        f.focus();
+      });
+    });
+  </script>
 </body>
 </html>
